@@ -129,9 +129,8 @@ namespace Game
         /// <inheritdoc />
         public void Draw(PaintEventArgs e, Rectangle bounds)
         {
-            var p = new Pen(Color.Black);
-            e.Graphics.DrawEllipse(p, new RectangleF{Location=new PointF(Location.X-Size.Width/2.0f, Location.Y-Size.Height/2.0f), Width=Size.Width, Height = Size.Height});
-            p.Dispose();
+            e.Graphics.FillRectangle(Brushes.Black, bounds);
+            e.Graphics.DrawEllipse(Pens.White, new RectangleF{Location=new PointF(Location.X-Size.Width/2.0f, Location.Y-Size.Height/2.0f), Width=Size.Width, Height = Size.Height});
         }
 
         /// <inheritdoc />
