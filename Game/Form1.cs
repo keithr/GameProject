@@ -11,7 +11,6 @@ namespace Game
         private List<IGameObject> gameObjects = new();
         public Form1()
         {
-            DoubleBuffered = true;
             InitializeComponent();
             InitializeGame();
         }
@@ -26,9 +25,36 @@ namespace Game
             AddShip();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void AddShip()
         {
             gameObjects.Add(new Ship {Location = new Point(100, 100), Size = new Size(50, 50)});
+        }
+
+        /// <summary>
+        /// Called by Timer (30 times a second).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GameUpdate(object sender, EventArgs e)
+        {
+            foreach (var o in gameObjects)
+            {
+                o.Update(gameObjects, ClientRectangle);
+            }
+            Invalidate(); // Forces a paint.
+        }
+
+
+        /// <inheritdoc />
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            foreach (var o in gameObjects)
+            {
+                o.Draw(e, ClientRectangle);
+            }
         }
 
         /// <inheritdoc />
@@ -40,7 +66,7 @@ namespace Game
                     foreach (var o in Enumerable.Reverse(gameObjects))
                     {
                         if (o is not IInput input) continue;
-                        if (input.Fire()) return;
+                        if (input.PewPew()) return;
                     }
                     break;
                 case Keys.Left:
@@ -73,30 +99,6 @@ namespace Game
                     break;
             }
         }
-
-        /// <summary>
-        /// Called by Timer (30 times a second).
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GameUpdate(object sender, EventArgs e)
-        {
-            foreach (var o in gameObjects)
-            {
-                o.Update(gameObjects, ClientRectangle);
-            }
-            Invalidate(); // Forces a paint.
-        }
-
-
-        /// <inheritdoc />
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            foreach (var o in gameObjects)
-            {
-                o.Draw(e, ClientRectangle);
-            }
-        }
     }
 
     internal interface IGameObject
@@ -114,7 +116,7 @@ namespace Game
         bool Down();
         bool Left();
         bool Right();
-        bool Fire();
+        bool PewPew();
     }
 
     internal class Ship : IGameObject, IInput
@@ -173,9 +175,9 @@ namespace Game
         }
 
         /// <inheritdoc />
-        public bool Fire()
+        public bool PewPew()
         {
-            System.Diagnostics.Debug.WriteLine("Fire");
+            System.Diagnostics.Debug.WriteLine("PewPew");
             return true;
         }
     }
