@@ -9,6 +9,7 @@ namespace Game
     public partial class Form1 : Form
     {
         private List<IGameObject> gameObjects = new();
+        public static Random r = new Random();
         public Form1()
         {
             InitializeComponent();
@@ -20,9 +21,19 @@ namespace Game
         /// </summary>
         private void InitializeGame()
         {
-            // AddStars();
+            AddStars();
             // AddAsteroids();
             AddShip();
+        }
+
+        private void AddStars()
+        {
+            for (int i = 0; i < 250; i++)
+            {
+                int x = r.Next(ClientRectangle.Left, ClientRectangle.Right);
+                int y = r.Next(ClientRectangle.Top, ClientRectangle.Bottom);
+                gameObjects.Add(new StarfieldStar{Location = new Point(x, y)});
+            }
         }
 
         /// <summary>
@@ -51,6 +62,7 @@ namespace Game
         /// <inheritdoc />
         protected override void OnPaint(PaintEventArgs e)
         {
+            e.Graphics.FillRectangle(Brushes.Black, ClientRectangle);
             foreach (var o in gameObjects)
             {
                 o.Draw(e, ClientRectangle);
@@ -103,12 +115,16 @@ namespace Game
 
     internal interface IGameObject
     {
-        public PointF Location { get; set; }
+        public Point Location { get; set; }
         void Draw(PaintEventArgs e, Rectangle bounds);
         void Update(List<IGameObject> gameObjects, Rectangle bounds);
+    }
 
+    internal interface ICollision
+    {
         bool IsCollision(IGameObject obj);
     }
+
 
     internal interface IInput
     {
@@ -119,24 +135,42 @@ namespace Game
         bool PewPew();
     }
 
-    internal class Ship : IGameObject, IInput
+    internal class StarfieldStar: IGameObject
+    {
+        private int width = 2;
+        public Point Location { get; set; }
+        public void Draw(PaintEventArgs e, Rectangle bounds)
+        {
+            e.Graphics.FillEllipse(Brushes.White, new Rectangle { X=Location.X, Y=Location.Y, Width = width, Height = width });
+        }
+
+        public void Update(List<IGameObject> gameObjects, Rectangle bounds)
+        {
+            if (Form1.r.Next(0, 1000) > 990)
+            {
+                width = width > 2 ? 2 : 3;
+            }
+        }
+    }
+
+    internal class Ship : IGameObject, IInput, ICollision
     {
         /// <inheritdoc />
-        public PointF Location { get; set; }
+        public Point Location { get; set; }
 
         public Size Size { get; set; }
 
         /// <inheritdoc />
         public void Draw(PaintEventArgs e, Rectangle bounds)
         {
-            e.Graphics.FillRectangle(Brushes.Black, bounds);
+            e.Graphics.FillEllipse(Brushes.Black, new RectangleF { Location = new PointF(Location.X - Size.Width / 2.0f, Location.Y - Size.Height / 2.0f), Width = Size.Width, Height = Size.Height });
             e.Graphics.DrawEllipse(Pens.White, new RectangleF{Location=new PointF(Location.X-Size.Width/2.0f, Location.Y-Size.Height/2.0f), Width=Size.Width, Height = Size.Height});
         }
 
         /// <inheritdoc />
         public void Update(List<IGameObject> gameObjects, Rectangle bounds)
         {
-            Location = new PointF(Location.X+1f, Location.Y+1f);
+            Location = new Point(Location.X+1, Location.Y+1);
         }
 
         /// <inheritdoc />
