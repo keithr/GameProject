@@ -146,7 +146,7 @@ namespace Game
 
         public void Update(List<IGameObject> gameObjects, Rectangle bounds)
         {
-            if (Form1.r.Next(0, 1000) > 990)
+            if (Form1.r.Next(0, 1000) > 991)
             {
                 isWhite = !isWhite;
             }
