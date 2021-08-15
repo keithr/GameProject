@@ -137,18 +137,18 @@ namespace Game
 
     internal class StarfieldStar: IGameObject
     {
-        private int width = 2;
+        private bool isWhite = false;
         public Point Location { get; set; }
         public void Draw(PaintEventArgs e, Rectangle bounds)
         {
-            e.Graphics.FillEllipse(Brushes.White, new Rectangle { X=Location.X, Y=Location.Y, Width = width, Height = width });
+            e.Graphics.FillEllipse(isWhite ? Brushes.White : Brushes.DarkGray, new Rectangle { X=Location.X, Y=Location.Y, Width = 3, Height = 3 });
         }
 
         public void Update(List<IGameObject> gameObjects, Rectangle bounds)
         {
             if (Form1.r.Next(0, 1000) > 990)
             {
-                width = width > 2 ? 2 : 3;
+                isWhite = !isWhite;
             }
         }
     }
